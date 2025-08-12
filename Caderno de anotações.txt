@@ -1,0 +1,363 @@
+# Aula01 - Carregamento e Exploração Inicial dos Dados
+
+#section aula 00
+
+import pandas as pd
+
+df = pd.read_csv("https://raw.githubusercontent.com/guilhermeonrails/data-jobs/refs/heads/main/salaries.csv")   #df eh data frame, uma boa pratica
+
+df.head(10)
+
+df.info()
+
+df.describe()
+
+df.shape #tupla Linhas e colunas para saber qual eh a dimensão desse arquivo.
+
+linhas, colunas = df.shape[0], df.shape[1]
+
+print('linhas: ', linhas)
+print('colunas: ', colunas)
+
+df.columns
+
+# Criar um dicionário para mapear os nomes das colunas
+traducao_colunas = {
+    'work_year': 'ano',
+    'experience_level': 'senioridade',
+    'employment_type': 'contrato',
+    'job_title': 'cargo',
+    'salary': 'salario',
+    'salary_currency': 'moeda',
+    'salary_in_usd': 'usd',
+    'employee_residence': 'residencia',
+    'remote_ratio': 'remoto',
+    'company_location': 'empresa',
+    'company_size': 'tamanho_empresa'
+}
+
+# Renomear as colunas do DataFrame
+df.rename(columns=traducao_colunas, inplace=True)
+
+# Exibir as colunas traduzidas para verificar
+display(df.columns)
+
+df['senioridade'].value_counts()
+
+#Lembra de ter domínio sobre a base e sobre as informações
+#se Senior
+#mi Intermediario (pleno)
+#en Junior
+#ex Executivo
+
+#SITE PARA USAR DE BASES PARA APRENDER: KAGGLE
+
+df['contrato'].value_counts()
+
+#FT Full time
+#CT Contrato temporário (tipo 3 meses)
+#PT Part time(um certo periodo)
+#FL Free lancer(uma demanda mais pontual)
+
+df['remoto'].value_counts()
+
+#0 trabalhos presenciais
+#100 remotos
+#50 hibridas
+
+df['tamanho_empresa'].value_counts()
+
+#ORGANIZAR OS DADOS É MUITO IMPORTANTE E DOCUMENTAR.
+#m MEDIO
+#L lARRGO (LARGE)
+#S SMALL
+
+#é importante deixar o mais claro possível, e trabalhar com a renomeação das categorias!
+#Principalmente, como os especialistas visão poupar meméoria abreviando os nomes
+#das variaveis, e depois um documento especificando elas,
+
+
+
+# Criar um dicionário para mapear as categorias para português
+senioridade = {
+    'SE': 'Senior',
+    'MI': 'Pleno',
+    'EN': 'Junior',
+    'EX': 'Executivo'
+}
+
+# Traduzir as categorias na coluna 'senioridade'
+df['senioridade'] = df['senioridade'].replace(senioridade)
+
+# Verificar as categorias traduzidas
+display(df['senioridade'].value_counts())
+
+# Criar um dicionário para mapear as categorias para português
+traducao_contrato = {
+    'FT': 'Tempo Integral',
+    'CT': 'Contrato',
+    'PT': 'Meio Período',
+    'FL': 'Freelancer'
+}
+
+# Traduzir as categorias na coluna 'contrato'
+df['contrato'] = df['contrato'].replace(traducao_contrato)
+display(df['contrato'].value_counts())
+
+traducao_tamanho_empresa ={
+    'M': 'Media',
+    'L': 'Grande',
+    'S': 'Pequena'
+}
+df['tamanho_empresa'] = df['tamanho_empresa'].replace(traducao_tamanho_empresa)
+display(df['tamanho_empresa'].value_counts())
+
+
+traducao_remoto = {
+    0: 'Presencial',
+    100: 'Remoto',
+    50: 'Hibrido'
+}
+df['remoto'] = df['remoto'].replace(traducao_remoto)
+display(df['remoto'].value_counts())
+
+
+df.head()
+
+df.describe(include='object')
+
+df.describe()
+
+# Aula02
+
+
+df.isnull()
+
+df.head()
+
+# trabalhar com valores faltantes é um problema no mundo de dados, sempre confira com o is null
+
+df.isnull().sum()
+
+#então aqui ele encontrou 10 pessoas que não tem a variável ano existente, e se quiser ir mais você consegue ver quantas pessoas tem nessa coluna
+
+
+df['ano'].unique() #Lembra que para um valor especifco usar [] e o unique mostra os valores especificos
+
+# nam significa not a number, a gente pode até exibir as linahs em específicos:
+
+df[df.isnull().any(axis = 1)]
+
+#COMO CRIAR UM DATA FRAME DO 0
+
+#importando uma biblioteca nova:
+
+import numpy as np
+
+import numpy as np
+#criaçãod e dataframe
+df_salarios = pd.DataFrame({
+    'nome': ["Fernando","Bruno","Carlos","João","Laura"],
+    'salario': [4000, np.nan, 5000, np.nan, 10000]
+})
+
+#Calculo da média
+df_salarios['salarios_media'] = df_salarios['salario'].fillna(df_salarios['salario'].mean().round(2))
+
+df_salarios['salarios_mediana'] = df_salarios['salario'].fillna(df_salarios['salario'].median())
+
+#aqui basicamente ele chama uma nova coluna 'salario_media'
+# e diz que nela terá a soma dos valores que estão dentro da base, (fill.na), vão preencher com a média
+df_salarios
+
+df_temperaturas = pd.DataFrame({
+    'dia_semana':['segunda','terça','quarta','quinta','sexta'],
+    'temperatura':[30, np.nan, np.nan, 28, 27]
+})
+
+df_temperaturas["prenchido_ffill"] = df_temperaturas["temperatura"].ffill()
+ #ffill: da bibilitoeca pandas
+df_temperaturas
+
+#ffil, vai completar com os valores anteriores
+
+df_temperaturas = pd.DataFrame({
+    'dia_semana':['segunda','terça','quarta','quinta','sexta'],
+    'temperatura':[30, np.nan, np.nan, 28, 27]
+})
+
+df_temperaturas["prenchido_ffill"] = df_temperaturas["temperatura"].bfill()
+ #ffill: da bibilitoeca pandas
+df_temperaturas
+
+#b fill vemd e back, você já pdoe pensar em usar um if ai e caso ele não pegue o antigo valor ele pega o superior
+
+df_cidades = pd.DataFrame({
+    'nome': ["Fernando","Bruno","Carlos","João","Laura"],
+    'cidade':["São Paulo",np.nan,"Rio de Janeiro",np.nan,"Minas Gerais"]
+})
+
+df_cidades["cidade_corrigida"] = df_cidades["cidade"].fillna("Não informado")
+df_cidades
+
+# a melhor opção ao aprender esses métodos são excluir
+# quando você for exluir algo ou alterar mesmo algo dentro do seu dataframe
+# é recomendado você criar uma nova variável, para não acontecer "ACIDENTES"
+
+df_limpo = df.dropna()
+
+df_limpo.isnull().sum()
+
+df_limpo.head()
+
+df_limpo.info()
+
+#converta o tipo:
+
+df_limpo = df_limpo.assign(ano = df_limpo['ano'].astype("int64"))
+
+df_limpo.info()
+
+#Aula 03
+
+df_limpo.head()
+
+df_limpo['senioridade'].value_counts().plot(kind='bar', title="Distribuição de Senioridade")
+
+# Existem bibliotecas apropriadas para exibição de gráficos por exemplo: "MatPlotLib" e a "Seaborn", já que a pandas é limitada
+
+#Começando a usar a Seaborn:
+#Lembra que você tem que aprender a importar as bibliotecas, pois no colab já tem é só import
+
+
+import seaborn as sns
+
+#Criando o gráfico com a nova biblitoeca no tipo de barplot (barras)
+#Primeiro chama o banco "df_limpo", depois chama os eixos
+sns.barplot(data=df_limpo, x='senioridade', y='usd')
+
+# agora iremos usar as duas bibliotecas em conjunto
+
+import matplotlib.pyplot as plt
+
+#Definindo o tamanho da imagem:
+plt.figure(figsize=(8, 5))
+#chamando o gráfico:
+sns.barplot(data=df_limpo, x='senioridade', y='usd')
+#colocando um título GERAL
+plt.title("Salário por nível de senioridade")
+#colocando um título eixo x
+plt.xlabel("Nível de senioridade")
+#colocando um título eixo y
+plt.ylabel("Salário médio anual(USD)")
+#Para exibir o gráfico sem nenhum texto em cima:
+plt.show()
+
+#Vamos deixar em ordem?? Podemos usar o método da pandas, Grupoby
+
+df_limpo.groupby('senioridade')['usd'].mean().sort_values(ascending=True)
+
+ordem = df_limpo.groupby('senioridade')['usd'].mean().sort_values(ascending=True).index
+
+ordem
+
+#Definindo o tamanho da imagem:
+plt.figure(figsize=(8, 5))
+#chamando o gráfico:
+sns.barplot(data=df_limpo, x='senioridade', y='usd', order=ordem)
+#colocando um título GERAL
+plt.title("Salário por nível de senioridade")
+#colocando um título eixo x
+plt.xlabel("Nível de senioridade")
+#colocando um título eixo y
+plt.ylabel("Salário médio anual(USD)")
+#Para exibir o gráfico sem nenhum texto em cima:
+plt.show()
+
+#Dependendo do History telling, você pode manipular as ordens dos gráficos,
+
+# assim usa o histograma
+
+plt.figure(figsize=(10,5))
+# no fig size cada coisa significa alguma coisa, o 10 eh a largura e o 5 a altura
+sns.histplot(data=df_limpo['usd'], bins= 50, kde =True)
+#kde eh o desenho que acompanha as distribuição
+#Aqui em cuma ele chama a biblioteca seaborn, chama ua propriedade dela, e
+#pretende aplicar a propriedade dela que na verdade eh manipular gráficos, em cima do nosso DataFrame
+#ai ele chama o nome do data frame, chama a coluna que ele quer avaliar
+# o bins representa a largura das barras no GRAFICO <<<<<IMPORTANTE>>>>>>>>>>
+plt.title("Distribuição dos salarios anuais")
+#colocando um título eixo x
+plt.xlabel("Salários em USD")
+#colocando um título eixo y
+plt.ylabel("Frequência")
+#Para exibir o gráfico sem nenhum texto em cima:
+plt.show()
+
+plt.figure(figsize=(12,5))
+sns.boxplot(x=df_limpo['usd'] )
+plt.title("Box plot salário anuais")
+plt.xlabel("Salários em USD")
+plt.show()
+
+
+ordem_senioridade = ['Junior','Pleno','Senior','Executivo']
+plt.figure(figsize=(12,5))
+sns.boxplot(x ='senioridade',y ='usd', data=df_limpo, order=ordem_senioridade)
+plt.title("BoxPlot, distribuição por senioridade")
+plt.xlabel("Salários em USD")
+plt.show()
+
+#Bora enfeitar esse gráfico??
+
+ordem_senioridade = ['Junior','Pleno','Senior','Executivo']
+plt.figure(figsize=(12,5))
+sns.boxplot(x ='senioridade',y ='usd', data=df_limpo, order=ordem_senioridade, palette='Set2',hue='senioridade')
+plt.title("BoxPlot, distribuição por senioridade")
+plt.xlabel("Salários em USD")
+plt.show()
+
+#BIBLIOTECA NOVAAAA: PLOTLY
+
+import plotly.express as px
+
+# prompt: Crie um gráfico de média salarial por senioridade em barras usando o plotly
+
+senioridade_media_salario = df_limpo.groupby('senioridade')['usd'].mean().sort_values(ascending=False).reset_index()
+
+fig = px.bar(senioridade_media_salario,
+             x='senioridade',
+             y='usd',
+             title='Média Salarial por Senioridade',
+             labels={'senioridade': 'Nível de Senioridade', 'usd': 'Média Salarial Anual (USD)'})
+
+fig.show()
+
+
+
+remoto_contagem = df_limpo['remoto'].value_counts().reset_index()
+remoto_contagem.columns = ['tipo_trabalho', 'quantidade']
+
+fig = px.pie(remoto_contagem,
+             names='tipo_trabalho',
+             values='quantidade',
+             title='Proporção dos tipos de trabalho',
+             hole=0.5
+
+          )
+
+fig.show()
+
+remoto_contagem = df_limpo['remoto'].value_counts().reset_index()
+remoto_contagem.columns = ['tipo_trabalho', 'quantidade']
+
+fig = px.pie(remoto_contagem,
+             names='tipo_trabalho',
+             values='quantidade',
+             title='Proporção dos tipos de trabalho'
+
+          )
+
+fig.update_traces(textinfo='percent+label')
+
+fig.show()
